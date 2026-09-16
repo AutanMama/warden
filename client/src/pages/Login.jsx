@@ -79,7 +79,7 @@ export default function Login() {
         <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-white/[0.03] blur-3xl pointer-events-none" />
 
         <div className="relative z-10">
-          <Logo withWordmark />
+          <Logo withWordmark dark />
           <span className="mt-8 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-success)]/15 border border-[var(--color-success)]/30 text-[13px] font-medium text-emerald-300">
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)]" />
             System Operational
