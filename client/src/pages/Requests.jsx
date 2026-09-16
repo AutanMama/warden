@@ -26,6 +26,14 @@ export default function Requests() {
       <PageHeader
         title={isApprover ? "Requests" : "My Requests"}
         subtitle={isApprover ? "All requests submitted across the organization." : "Requests you've submitted."}
+        action={
+          <Link
+            to="/requests/new"
+            className="text-sm font-medium text-white bg-[var(--color-navy)] hover:bg-[var(--color-midnight)] px-3.5 py-2 rounded-[6px]"
+          >
+            New Request
+          </Link>
+        }
       />
 
       <Card className="overflow-hidden">

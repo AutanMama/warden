@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Overview from "./pages/Overview";
 import Requests from "./pages/Requests";
+import NewRequest from "./pages/NewRequest";
 import RequestDetail from "./pages/RequestDetail";
 import Approvals from "./pages/Approvals";
 import Users from "./pages/Users";
@@ -35,6 +36,14 @@ export default function App() {
           element={
             <RequirePermission permission="view_requests">
               <Requests />
+            </RequirePermission>
+          }
+        />
+        <Route
+          path="/requests/new"
+          element={
+            <RequirePermission permission="create_request">
+              <NewRequest />
             </RequirePermission>
           }
         />

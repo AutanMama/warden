@@ -59,8 +59,8 @@ The Vite dev server proxies `/api` to `http://localhost:4000`.
 - Maker/checker approval workflow: `POST /api/requests`, `/:id/approve`, `/:id/reject` — a request's own maker gets a 403 if they try to decide it themselves.
 - Every create/approve/reject action is written to an audit log; `GET /api/requests/:id/history` powers the per-request audit timeline in the UI.
 - Frontend fully wired to this real API (Overview, Requests, Approvals, Request Detail, Users, Audit Log) — no more mock data for any of it.
+- A real "New Request" form (`/requests/new`) — any role can submit a request end to end through the UI, not just via curl.
 
 **Not done yet:**
 - No admin UI to change a user's role after creation (roles are fixed at seed time).
-- No "New Request" form in the UI yet — the button links to the requests list; the create endpoint works and is tested via curl, but isn't reachable through the UI.
 - Not deployed anywhere yet — local only.
