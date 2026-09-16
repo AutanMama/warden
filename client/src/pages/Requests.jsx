@@ -49,12 +49,12 @@ export default function Requests() {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wide text-slate-500 border-b border-slate-100">
-                <th className="px-4 py-2.5 font-medium">Request</th>
-                <th className="px-4 py-2.5 font-medium">Department</th>
-                {isApprover && <th className="px-4 py-2.5 font-medium">Maker</th>}
-                <th className="px-4 py-2.5 font-medium">Status</th>
-                <th className="px-4 py-2.5 font-medium">Submitted</th>
-                <th className="px-4 py-2.5 font-medium"></th>
+                <th className="px-4 py-2.5 font-semibold">Request</th>
+                <th className="px-4 py-2.5 font-semibold">Department</th>
+                {isApprover && <th className="px-4 py-2.5 font-semibold">Maker</th>}
+                <th className="px-4 py-2.5 font-semibold">Status</th>
+                <th className="px-4 py-2.5 font-semibold">Submitted</th>
+                <th className="px-4 py-2.5 font-semibold"></th>
               </tr>
             </thead>
             <tbody>
@@ -64,7 +64,7 @@ export default function Requests() {
                     <Link to={`/requests/${r.id}`} className="text-slate-900 font-medium hover:text-[var(--color-navy)]">
                       {r.title}
                     </Link>
-                    <p className="text-xs text-slate-400">{r.id.slice(0, 8)}</p>
+                    <p className="text-xs text-slate-500 font-mono">{r.id.slice(0, 8)}</p>
                   </td>
                   <td className="px-4 py-2.5 text-slate-600">{r.department}</td>
                   {isApprover && <td className="px-4 py-2.5 text-slate-600">{r.maker.name}</td>}

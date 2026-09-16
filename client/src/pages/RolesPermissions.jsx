@@ -21,10 +21,10 @@ export default function RolesPermissions() {
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-xs uppercase tracking-wide text-slate-500 border-b border-slate-100">
-              <th className="px-4 py-2.5 font-medium">Permission</th>
-              <th className="px-4 py-2.5 font-medium text-center">Admin</th>
-              <th className="px-4 py-2.5 font-medium text-center">Manager</th>
-              <th className="px-4 py-2.5 font-medium text-center">Staff</th>
+              <th className="px-4 py-2.5 font-semibold">Permission</th>
+              <th className="px-4 py-2.5 font-semibold text-center">Admin</th>
+              <th className="px-4 py-2.5 font-semibold text-center">Manager</th>
+              <th className="px-4 py-2.5 font-semibold text-center">Staff</th>
             </tr>
           </thead>
           <tbody>
