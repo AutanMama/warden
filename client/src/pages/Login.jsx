@@ -192,7 +192,7 @@ export default function Login() {
                   type="button"
                   disabled={loading}
                   onClick={() => handleDemoLogin(acc.email)}
-                  className="group w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-[8px] border border-[var(--color-border)] bg-white hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60 text-left transition-colors"
+                  className="group w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-[8px] border border-[var(--color-border)] bg-white hover:border-[var(--color-navy)]/30 hover:bg-slate-50 hover:shadow-[0_2px_8px_rgba(15,23,42,0.08)] hover:-translate-y-px disabled:opacity-60 disabled:hover:translate-y-0 text-left transition-all duration-150"
                 >
                   <span>
                     <span className="block text-sm font-medium text-slate-900">{acc.role}</span>

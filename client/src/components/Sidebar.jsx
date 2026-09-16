@@ -51,7 +51,7 @@ function NavItem({ to, label, icon: Icon, locked, onNavigate }) {
         `relative flex items-center gap-2.5 pl-3 pr-3 py-2 rounded-[6px] text-[13.5px] transition-colors ${
           isActive
             ? "bg-slate-50 text-slate-900 font-medium"
-            : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+            : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
         }`
       }
     >

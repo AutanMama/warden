@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
 import AppShell from "./components/AppShell";
+import ScrollToTop from "./components/ScrollToTop";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RequirePermission from "./components/RequirePermission";
 
@@ -30,6 +31,7 @@ function PageFallback() {
 export default function App() {
   return (
     <Suspense fallback={<PageFallback />}>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Navigate to="/overview" replace />} />
         <Route path="/login" element={<Login />} />

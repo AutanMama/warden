@@ -68,8 +68,9 @@ export default function Topbar({ onMenuClick }) {
         {isApprover && (
           <Link
             to="/approvals"
-            className="relative p-2 rounded-[6px] text-slate-400 hover:text-slate-700 hover:bg-slate-50"
+            className="relative p-2 rounded-[6px] text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
             aria-label="Pending approvals"
+            title={pendingCount > 0 ? `${pendingCount} pending approval${pendingCount > 1 ? "s" : ""}` : "No pending approvals"}
           >
             <Bell size={17} />
             {pendingCount > 0 && (
