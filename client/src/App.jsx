@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { LoaderCircle } from "lucide-react";
 import AppShell from "./components/AppShell";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RequirePermission from "./components/RequirePermission";
@@ -20,8 +21,8 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 function PageFallback() {
   return (
-    <div className="min-h-[40vh] flex items-center justify-center text-sm text-slate-400">
-      Loading…
+    <div className="min-h-[40vh] flex items-center justify-center">
+      <LoaderCircle size={20} className="animate-spin text-slate-300" />
     </div>
   );
 }

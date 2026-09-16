@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import { prefetchRoutes } from "../lib/prefetchRoutes";
 
 export default function AppShell() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const id = setTimeout(prefetchRoutes, 300);
+    return () => clearTimeout(id);
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-[var(--color-bg)]">
