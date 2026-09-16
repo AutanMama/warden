@@ -1,7 +1,10 @@
 import axios from "axios";
 
+// Locally, Vite's dev server proxies "/api" to localhost:4000 (see
+// vite.config.js). In production there's no such proxy, so VITE_API_URL
+// must point at the real deployed API.
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.VITE_API_URL || "/api",
 });
 
 api.interceptors.request.use((config) => {
