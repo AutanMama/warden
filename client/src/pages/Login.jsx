@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LoaderCircle, ShieldCheck, GitBranch, History } from "lucide-react";
+import { LoaderCircle, ShieldCheck, GitBranch, History, ArrowRight } from "lucide-react";
 import Logo from "../components/Logo";
 import { useAuth } from "../context/AuthContext";
 
@@ -10,6 +10,24 @@ const DEMO_ACCOUNTS = [
   { role: "Staff", email: "staff@warden.dev", detail: "Can submit requests, nothing else" },
 ];
 const DEMO_PASSWORD = "password123";
+
+const FEATURES = [
+  {
+    icon: ShieldCheck,
+    title: "Server-enforced RBAC",
+    body: "Three roles, each with genuinely different access, checked on every request.",
+  },
+  {
+    icon: GitBranch,
+    title: "Maker/checker workflow",
+    body: "Nobody can approve a request they submitted themselves.",
+  },
+  {
+    icon: History,
+    title: "Full audit trail",
+    body: "Every approval, rejection, and role change is recorded and attributable.",
+  },
+];
 
 export default function Login() {
   const { login } = useAuth();
@@ -49,44 +67,54 @@ export default function Login() {
   return (
     <div className="min-h-screen flex bg-[var(--color-bg)]">
       {/* Context panel — explains what this is to a stranger landing here cold */}
-      <div className="hidden lg:flex lg:w-[42%] bg-[var(--color-navy)] text-white flex-col justify-between p-12">
-        <Logo withWordmark />
+      <div
+        className="hidden lg:flex lg:w-[46%] relative overflow-hidden bg-[var(--color-navy)] text-white flex-col justify-between p-14"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
+          backgroundSize: "36px 36px",
+        }}
+      >
+        <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-white/5 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-white/[0.03] blur-3xl pointer-events-none" />
 
-        <div>
-          <h1 className="text-2xl font-semibold leading-snug mb-3">
-            A role-based operations platform with real maker/checker approvals.
+        <div className="relative z-10">
+          <Logo withWordmark />
+          <span className="mt-8 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-success)]/15 border border-[var(--color-success)]/30 text-[13px] font-medium text-emerald-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)]" />
+            System Operational
+          </span>
+        </div>
+
+        <div className="relative z-10">
+          <h1 className="text-[2.5rem] leading-[1.1] font-bold tracking-tight mb-4">
+            Real approvals.
+            <br />
+            Real permissions.
+            <br />
+            <span className="text-white/50">No hidden shortcuts.</span>
           </h1>
-          <p className="text-sm text-white/70 leading-relaxed mb-8">
-            This is a live demo. Permissions are enforced by the API itself, not just hidden in the
-            UI — a Staff account genuinely cannot approve requests, even by calling the endpoint directly.
+          <p className="text-[15px] text-white/60 leading-relaxed mb-10 max-w-md">
+            This is a live demo. Every restriction below is enforced by the API itself — try to
+            break it.
           </p>
 
-          <div className="space-y-5">
-            <div className="flex gap-3">
-              <ShieldCheck size={18} className="text-white/50 shrink-0 mt-0.5" />
-              <p className="text-sm text-white/70">
-                <span className="text-white font-medium">Server-enforced RBAC</span> — three roles,
-                each with genuinely different access, checked on every request.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <GitBranch size={18} className="text-white/50 shrink-0 mt-0.5" />
-              <p className="text-sm text-white/70">
-                <span className="text-white font-medium">Maker/checker workflow</span> — nobody can
-                approve a request they submitted themselves.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <History size={18} className="text-white/50 shrink-0 mt-0.5" />
-              <p className="text-sm text-white/70">
-                <span className="text-white font-medium">Full audit trail</span> — every approval,
-                rejection, and role change is recorded and attributable.
-              </p>
-            </div>
+          <div className="space-y-6">
+            {FEATURES.map(({ icon: Icon, title, body }) => (
+              <div key={title} className="flex gap-4">
+                <div className="w-9 h-9 rounded-[8px] bg-white/10 border border-white/10 flex items-center justify-center shrink-0">
+                  <Icon size={16} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-[15px] font-semibold text-white">{title}</p>
+                  <p className="text-sm text-white/55 leading-relaxed mt-0.5">{body}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        <p className="text-xs text-white/40">Operations &amp; Control Platform</p>
+        <p className="relative z-10 text-xs text-white/35">Operations &amp; Control Platform</p>
       </div>
 
       {/* Sign-in panel */}
@@ -164,12 +192,16 @@ export default function Login() {
                   type="button"
                   disabled={loading}
                   onClick={() => handleDemoLogin(acc.email)}
-                  className="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-[8px] border border-[var(--color-border)] bg-white hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60 text-left transition-colors"
+                  className="group w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-[8px] border border-[var(--color-border)] bg-white hover:border-slate-300 hover:bg-slate-50 disabled:opacity-60 text-left transition-colors"
                 >
                   <span>
                     <span className="block text-sm font-medium text-slate-900">{acc.role}</span>
                     <span className="block text-xs text-slate-500">{acc.detail}</span>
                   </span>
+                  <ArrowRight
+                    size={15}
+                    className="text-slate-300 group-hover:text-slate-500 group-hover:translate-x-0.5 transition-all shrink-0"
+                  />
                 </button>
               ))}
             </div>
