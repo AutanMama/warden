@@ -15,6 +15,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import Card from "../components/Card";
 import StatusBadge from "../components/StatusBadge";
+import { TableSkeleton } from "../components/Skeleton";
 import { can } from "../lib/permissions";
 import { listRequests } from "../api/requests";
 
@@ -230,7 +231,7 @@ export default function Overview() {
           </Link>
         </div>
         {loading ? (
-          <p className="px-4 py-10 text-center text-sm text-slate-500">Loading…</p>
+          <TableSkeleton rows={4} />
         ) : (
           <RequestsTable
             rows={rows.slice(0, 6)}

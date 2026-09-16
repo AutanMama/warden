@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Card from "../components/Card";
 import PageHeader from "../components/PageHeader";
 import StatusBadge from "../components/StatusBadge";
+import { TableSkeleton } from "../components/Skeleton";
 import { roleStyle } from "../lib/roleStyles";
 import { useAuth } from "../context/AuthContext";
 import { can } from "../lib/permissions";
@@ -59,7 +60,7 @@ export default function Users() {
 
       <Card className="overflow-hidden">
         {loading ? (
-          <p className="px-4 py-10 text-center text-sm text-slate-500">Loading…</p>
+          <TableSkeleton rows={3} />
         ) : error ? (
           <p className="px-4 py-10 text-center text-sm text-[var(--color-danger)]">{error}</p>
         ) : (

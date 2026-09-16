@@ -4,6 +4,7 @@ import { ArrowLeft, Check, X, CircleAlert, History as HistoryIcon } from "lucide
 import { useAuth } from "../context/AuthContext";
 import Card from "../components/Card";
 import StatusBadge from "../components/StatusBadge";
+import { DetailSkeleton } from "../components/Skeleton";
 import { can } from "../lib/permissions";
 import { getRequest, getRequestHistory, approveRequest, rejectRequest } from "../api/requests";
 
@@ -78,7 +79,7 @@ export default function RequestDetail() {
   }, [id]);
 
   if (loading) {
-    return <p className="text-sm text-slate-500">Loading…</p>;
+    return <DetailSkeleton />;
   }
 
   if (error || !request) {

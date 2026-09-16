@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import Card from "../components/Card";
 import PageHeader from "../components/PageHeader";
 import StatusBadge from "../components/StatusBadge";
+import { TableSkeleton } from "../components/Skeleton";
 import { listAuditLog } from "../api/requests";
 
 const ACTION_LABEL = {
@@ -75,7 +76,7 @@ export default function AuditLog() {
 
       <Card className="overflow-hidden">
         {loading ? (
-          <p className="px-4 py-10 text-center text-sm text-slate-500">Loading…</p>
+          <TableSkeleton rows={6} />
         ) : error ? (
           <p className="px-4 py-10 text-center text-sm text-[var(--color-danger)]">{error}</p>
         ) : (

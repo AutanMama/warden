@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Card from "../components/Card";
 import PageHeader from "../components/PageHeader";
 import StatusBadge from "../components/StatusBadge";
+import { TableSkeleton } from "../components/Skeleton";
 import { listRequests } from "../api/requests";
 
 export default function Approvals() {
@@ -22,8 +23,8 @@ export default function Approvals() {
       <PageHeader title="Approvals" subtitle="Requests waiting on a checker decision." />
 
       {loading ? (
-        <Card padded className="text-center text-sm text-slate-500 !py-10">
-          Loading…
+        <Card className="overflow-hidden">
+          <TableSkeleton rows={3} />
         </Card>
       ) : error ? (
         <Card padded className="text-center text-sm text-[var(--color-danger)] !py-10">
