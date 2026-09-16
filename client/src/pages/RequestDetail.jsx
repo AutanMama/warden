@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Check, X, CircleAlert, History as HistoryIcon } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import Card from "../components/Card";
 import StatusBadge from "../components/StatusBadge";
-import { requests as seedRequests } from "../data/mockData";
+import { can } from "../lib/permissions";
+import { getRequest, getRequestHistory, approveRequest, rejectRequest } from "../api/requests";
 
 function formatTime(iso) {
   return new Date(iso).toLocaleString("en-GB", {
@@ -59,38 +60,57 @@ function Workflow({ status }) {
 export default function RequestDetail() {
   const { id } = useParams();
   const { user } = useAuth();
-  const [request, setRequest] = useState(() => seedRequests.find((r) => r.id === id));
+  const [request, setRequest] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [deciding, setDeciding] = useState(false);
 
-  if (!request) {
+  useEffect(() => {
+    Promise.all([getRequest(id), getRequestHistory(id)])
+      .then(([req, hist]) => {
+        setRequest(req);
+        setHistory(hist);
+      })
+      .catch((err) => setError(err.response?.data?.message || "Couldn't load this request."))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return <p className="text-sm text-slate-500">Loading…</p>;
+  }
+
+  if (error || !request) {
     return (
       <div className="text-sm text-slate-500">
-        Request not found. <Link to="/requests" className="text-[var(--color-navy)] hover:underline">Back to requests</Link>
+        {error || "Request not found."}{" "}
+        <Link to="/requests" className="text-[var(--color-navy)] hover:underline">Back to requests</Link>
       </div>
     );
   }
 
   const isMaker = user?.email === request.maker.email;
-  const canApprove = user?.role === "ADMIN" || user?.role === "MANAGER";
+  const canApprove = can(user?.role, "approve_request");
   const blockedReason = isMaker
     ? "You cannot approve a request you submitted."
     : !canApprove
     ? "You do not have permission to approve requests."
     : null;
 
-  function decide(decision) {
-    setRequest((r) => ({ ...r, status: decision, decidedBy: user.name, decidedAt: new Date().toISOString() }));
-  }
-
-  const history = [
-    { time: request.submittedAt, actor: request.maker.name, label: "Created request" },
-    { time: request.submittedAt, actor: "System", label: "Routed for approval" },
-  ];
-  if (request.status !== "pending") {
-    history.push({
-      time: request.decidedAt || request.submittedAt,
-      actor: request.decidedBy || "—",
-      label: request.status === "approved" ? "Approved request" : "Rejected request",
-    });
+  async function decide(action) {
+    setDeciding(true);
+    setActionError("");
+    try {
+      const updated = action === "approve" ? await approveRequest(id) : await rejectRequest(id);
+      setRequest(updated);
+      const hist = await getRequestHistory(id);
+      setHistory(hist);
+    } catch (err) {
+      setActionError(err.response?.data?.message || "That action failed.");
+    } finally {
+      setDeciding(false);
+    }
   }
 
   return (
@@ -155,6 +175,12 @@ export default function RequestDetail() {
                 Checker Action
               </h2>
 
+              {actionError && (
+                <p className="text-sm text-[var(--color-danger)] bg-[var(--color-danger-bg)] rounded-[6px] px-3 py-2 mb-3">
+                  {actionError}
+                </p>
+              )}
+
               {blockedReason ? (
                 <p className="flex items-center gap-2 text-sm text-slate-500 bg-slate-50 border border-slate-200 rounded-[6px] px-3 py-2.5">
                   <CircleAlert size={15} className="text-slate-400 shrink-0" />
@@ -163,14 +189,16 @@ export default function RequestDetail() {
               ) : (
                 <div className="flex items-center justify-between gap-3">
                   <button
-                    onClick={() => decide("rejected")}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-[6px] border border-[var(--color-border)] text-sm font-medium text-slate-700 hover:bg-slate-50"
+                    onClick={() => decide("reject")}
+                    disabled={deciding}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-[6px] border border-[var(--color-border)] text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
                   >
                     <X size={14} /> Reject
                   </button>
                   <button
-                    onClick={() => decide("approved")}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-[6px] bg-[var(--color-navy)] text-sm font-medium text-white hover:bg-[var(--color-midnight)]"
+                    onClick={() => decide("approve")}
+                    disabled={deciding}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-[6px] bg-[var(--color-navy)] text-sm font-medium text-white hover:bg-[var(--color-midnight)] disabled:opacity-60"
                   >
                     <Check size={14} /> Approve
                   </button>

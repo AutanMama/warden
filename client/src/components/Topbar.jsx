@@ -4,17 +4,24 @@ import { Search, ChevronDown, LogOut, Bell, Menu } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { roleStyle } from "../lib/roleStyles";
 import { can } from "../lib/permissions";
-import { requests } from "../data/mockData";
+import { listRequests } from "../api/requests";
 import CommandPalette from "./CommandPalette";
 
 export default function Topbar({ onMenuClick }) {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const menuRef = useRef(null);
   const style = roleStyle(user?.role);
   const isApprover = can(user?.role, "approve_request");
-  const pendingCount = isApprover ? requests.filter((r) => r.status === "pending").length : 0;
+
+  useEffect(() => {
+    if (!isApprover) return;
+    listRequests()
+      .then((rows) => setPendingCount(rows.filter((r) => r.status === "pending").length))
+      .catch(() => {});
+  }, [isApprover]);
 
   useEffect(() => {
     function onClickOutside(e) {

@@ -53,7 +53,14 @@ The Vite dev server proxies `/api` to `http://localhost:4000`.
 
 ## Milestone status
 
-**Milestone 1 — Foundations: done.**
-Postgres schema, JWT auth (register/login/me), protected client routes, login UI, dashboard shell.
+**Done:**
+- Auth: JWT register/login/me, bcrypt hashing, protected routes.
+- Role-based access control enforced server-side (`requirePermission` middleware), not just hidden in the UI — a Staff token gets a real 403 from `/api/users`, `/api/audit-log`, and the approve/reject endpoints.
+- Maker/checker approval workflow: `POST /api/requests`, `/:id/approve`, `/:id/reject` — a request's own maker gets a 403 if they try to decide it themselves.
+- Every create/approve/reject action is written to an audit log; `GET /api/requests/:id/history` powers the per-request audit timeline in the UI.
+- Frontend fully wired to this real API (Overview, Requests, Approvals, Request Detail, Users, Audit Log) — no more mock data for any of it.
 
-Next: Milestone 2 — role-based permission middleware + admin UI for assigning roles/permissions.
+**Not done yet:**
+- No admin UI to change a user's role after creation (roles are fixed at seed time).
+- No "New Request" form in the UI yet — the button links to the requests list; the create endpoint works and is tested via curl, but isn't reachable through the UI.
+- Not deployed anywhere yet — local only.

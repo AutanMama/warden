@@ -13,11 +13,57 @@ enum Role {
   STAFF
 }
 
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
+  id           String    @id @default(uuid())
+  email        String    @unique
   passwordHash String
   name         String
-  role         Role     @default(STAFF)
-  createdAt    DateTime @default(now())
+  role         Role      @default(STAFF)
+  createdAt    DateTime  @default(now())
+
+  requestsMade Request[] @relation("RequestMaker")
+  requestsDecided Request[] @relation("RequestChecker")
+  auditEvents  AuditLog[]
+}
+
+model Request {
+  id          String        @id @default(uuid())
+  title       String
+  item        String
+  amount      String
+  department  String
+  reason      String
+  status      RequestStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  decidedAt   DateTime?
+
+  maker       User          @relation("RequestMaker", fields: [makerId], references: [id])
+  makerId     String
+
+  decidedBy   User?         @relation("RequestChecker", fields: [decidedById], references: [id])
+  decidedById String?
+
+  auditEvents AuditLog[]
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  resource  String
+  before    String?
+  after     String?
+  result    String   @default("success")
+  createdAt DateTime @default(now())
+
+  actor     User     @relation(fields: [actorId], references: [id])
+  actorId   String
+
+  request   Request? @relation(fields: [requestId], references: [id])
+  requestId String?
 }

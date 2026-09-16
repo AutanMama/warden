@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import {
@@ -15,7 +16,7 @@ import { useAuth } from "../context/AuthContext";
 import Card from "../components/Card";
 import StatusBadge from "../components/StatusBadge";
 import { can } from "../lib/permissions";
-import { requests } from "../data/mockData";
+import { listRequests } from "../api/requests";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
@@ -62,7 +63,7 @@ function RequestsTable({ rows, emptyLabel }) {
                 <Link to={`/requests/${r.id}`} className="text-slate-900 font-medium hover:text-[var(--color-navy)]">
                   {r.title}
                 </Link>
-                <p className="text-xs text-slate-400">{r.id}</p>
+                <p className="text-xs text-slate-400">{r.id.slice(0, 8)}</p>
               </td>
               <td className="px-4 py-2.5 text-slate-600">{r.maker.name}</td>
               <td className="px-4 py-2.5">
@@ -87,7 +88,7 @@ function RequestsTable({ rows, emptyLabel }) {
   );
 }
 
-const TODAY = new Date("2026-09-15T12:00:00").toLocaleDateString("en-GB", {
+const TODAY = new Date().toLocaleDateString("en-GB", {
   weekday: "long",
   day: "numeric",
   month: "long",
@@ -99,16 +100,25 @@ export default function Overview() {
   const isApprover = can(user?.role, "approve_request");
   const isAdmin = can(user?.role, "manage_users");
 
-  const scopedRequests = isApprover ? requests : requests.filter((r) => r.maker.email === user?.email);
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    listRequests()
+      .then(setRows)
+      .catch(() => setError("Couldn't load requests."))
+      .finally(() => setLoading(false));
+  }, []);
 
   const counts = {
-    pending: scopedRequests.filter((r) => r.status === "pending").length,
-    approved: scopedRequests.filter((r) => r.status === "approved").length,
-    rejected: scopedRequests.filter((r) => r.status === "rejected").length,
+    pending: rows.filter((r) => r.status === "pending").length,
+    approved: rows.filter((r) => r.status === "approved").length,
+    rejected: rows.filter((r) => r.status === "rejected").length,
   };
 
-  const activitySeries = buildActivitySeries(scopedRequests);
-  const departmentSeries = buildDepartmentSeries(scopedRequests);
+  const activitySeries = buildActivitySeries(rows);
+  const departmentSeries = buildDepartmentSeries(rows);
 
   return (
     <div>
@@ -120,6 +130,12 @@ export default function Overview() {
         </div>
       </div>
 
+      {error && (
+        <p className="text-sm text-[var(--color-danger)] bg-[var(--color-danger-bg)] rounded-[6px] px-3 py-2 mb-5">
+          {error}
+        </p>
+      )}
+
       {/* Decision-first: one primary queue card + compact supporting metrics — each number appears once. */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
         <Link
@@ -127,7 +143,9 @@ export default function Overview() {
           className="sm:col-span-2 group flex items-center justify-between gap-4 rounded-[8px] px-5 py-4 text-white bg-[var(--color-navy)] hover:bg-[var(--color-midnight)] transition-colors"
         >
           <div className="flex items-center gap-4">
-            <p className="text-3xl font-semibold leading-none">{String(counts.pending).padStart(2, "0")}</p>
+            <p className="text-3xl font-semibold leading-none">
+              {loading ? "—" : String(counts.pending).padStart(2, "0")}
+            </p>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-white/60">
                 {isApprover ? "Pending Approvals" : "My Pending Requests"}
@@ -146,12 +164,12 @@ export default function Overview() {
         <Card padded className="!py-3 flex items-center justify-between gap-4">
           <div>
             <p className="text-xs text-slate-500">Approved</p>
-            <p className="text-lg font-semibold text-[var(--color-success)]">{counts.approved}</p>
+            <p className="text-lg font-semibold text-[var(--color-success)]">{loading ? "—" : counts.approved}</p>
           </div>
           <div className="w-px h-8 bg-slate-100" />
           <div>
             <p className="text-xs text-slate-500">Rejected</p>
-            <p className="text-lg font-semibold text-[var(--color-danger)]">{counts.rejected}</p>
+            <p className="text-lg font-semibold text-[var(--color-danger)]">{loading ? "—" : counts.rejected}</p>
           </div>
           {isAdmin && (
             <>
@@ -211,10 +229,14 @@ export default function Overview() {
             View all
           </Link>
         </div>
-        <RequestsTable
-          rows={scopedRequests.slice(0, 6)}
-          emptyLabel={isApprover ? "No requests yet." : "You haven't submitted any requests yet."}
-        />
+        {loading ? (
+          <p className="px-4 py-10 text-center text-sm text-slate-500">Loading…</p>
+        ) : (
+          <RequestsTable
+            rows={rows.slice(0, 6)}
+            emptyLabel={isApprover ? "No requests yet." : "You haven't submitted any requests yet."}
+          />
+        )}
       </Card>
     </div>
   );

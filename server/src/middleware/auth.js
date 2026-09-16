@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
+import { can } from "../lib/permissions.js";
 
 export async function requireAuth(req, res, next) {
   const header = req.headers.authorization;
@@ -21,9 +22,9 @@ export async function requireAuth(req, res, next) {
   }
 }
 
-export function requireRole(...roles) {
+export function requirePermission(permission) {
   return (req, res, next) => {
-    if (!roles.includes(req.user?.role)) {
+    if (!can(req.user?.role, permission)) {
       return res.status(403).json({ message: "Insufficient permissions." });
     }
     next();

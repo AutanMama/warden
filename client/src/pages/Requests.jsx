@@ -1,15 +1,25 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Card from "../components/Card";
 import PageHeader from "../components/PageHeader";
 import StatusBadge from "../components/StatusBadge";
 import { can } from "../lib/permissions";
-import { requests } from "../data/mockData";
+import { listRequests } from "../api/requests";
 
 export default function Requests() {
   const { user } = useAuth();
   const isApprover = can(user?.role, "approve_request");
-  const rows = isApprover ? requests : requests.filter((r) => r.maker.email === user?.email);
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    listRequests()
+      .then(setRows)
+      .catch(() => setError("Couldn't load requests."))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div>
@@ -19,7 +29,11 @@ export default function Requests() {
       />
 
       <Card className="overflow-hidden">
-        {rows.length === 0 ? (
+        {loading ? (
+          <p className="px-4 py-10 text-center text-sm text-slate-500">Loading…</p>
+        ) : error ? (
+          <p className="px-4 py-10 text-center text-sm text-[var(--color-danger)]">{error}</p>
+        ) : rows.length === 0 ? (
           <p className="px-4 py-10 text-center text-sm text-slate-500">No requests yet.</p>
         ) : (
           <div className="overflow-x-auto">
@@ -41,7 +55,7 @@ export default function Requests() {
                     <Link to={`/requests/${r.id}`} className="text-slate-900 font-medium hover:text-[var(--color-navy)]">
                       {r.title}
                     </Link>
-                    <p className="text-xs text-slate-400">{r.id}</p>
+                    <p className="text-xs text-slate-400">{r.id.slice(0, 8)}</p>
                   </td>
                   <td className="px-4 py-2.5 text-slate-600">{r.department}</td>
                   {isApprover && <td className="px-4 py-2.5 text-slate-600">{r.maker.name}</td>}

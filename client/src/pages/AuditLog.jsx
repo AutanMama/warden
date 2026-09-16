@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import Card from "../components/Card";
 import PageHeader from "../components/PageHeader";
 import StatusBadge from "../components/StatusBadge";
-import { auditEvents } from "../data/mockData";
+import { listAuditLog } from "../api/requests";
+
+const ACTION_LABEL = {
+  CREATED_REQUEST: "Created",
+  APPROVED_REQUEST: "Approved",
+  REJECTED_REQUEST: "Rejected",
+};
 
 function DetailDrawer({ event, onClose }) {
   if (!event) return null;
@@ -31,7 +37,7 @@ function DetailDrawer({ event, onClose }) {
           ].map(([label, value]) => (
             <div key={label}>
               <dt className="text-xs text-slate-500 mb-0.5">{label}</dt>
-              <dd className="text-slate-900 font-medium">{value}</dd>
+              <dd className="text-slate-900 font-medium break-all">{value ?? "—"}</dd>
             </div>
           ))}
           <div>
@@ -45,41 +51,57 @@ function DetailDrawer({ event, onClose }) {
 }
 
 export default function AuditLog() {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
+
+  useEffect(() => {
+    listAuditLog()
+      .then(setEvents)
+      .catch(() => setError("Couldn't load the audit log."))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div>
       <PageHeader title="Audit Log" subtitle="Every sensitive action, recorded and attributable." />
 
       <Card className="overflow-hidden">
-        <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-xs uppercase tracking-wide text-slate-500 border-b border-slate-100">
-              <th className="px-4 py-2.5 font-medium">Time</th>
-              <th className="px-4 py-2.5 font-medium">User</th>
-              <th className="px-4 py-2.5 font-medium">Action</th>
-              <th className="px-4 py-2.5 font-medium">Resource</th>
-              <th className="px-4 py-2.5 font-medium">Result</th>
-            </tr>
-          </thead>
-          <tbody>
-            {auditEvents.map((e) => (
-              <tr
-                key={e.id}
-                onClick={() => setSelected(e)}
-                className="border-b border-slate-100 last:border-0 hover:bg-slate-50 cursor-pointer"
-              >
-                <td className="px-4 py-2.5 text-slate-500">{e.time}</td>
-                <td className="px-4 py-2.5 text-slate-900 font-medium">{e.user}</td>
-                <td className="px-4 py-2.5 text-slate-600">{e.actionLabel}</td>
-                <td className="px-4 py-2.5 text-slate-600 font-mono text-xs">{e.resource}</td>
-                <td className="px-4 py-2.5"><StatusBadge status={e.result} /></td>
+        {loading ? (
+          <p className="px-4 py-10 text-center text-sm text-slate-500">Loading…</p>
+        ) : error ? (
+          <p className="px-4 py-10 text-center text-sm text-[var(--color-danger)]">{error}</p>
+        ) : (
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs uppercase tracking-wide text-slate-500 border-b border-slate-100">
+                <th className="px-4 py-2.5 font-medium">Time</th>
+                <th className="px-4 py-2.5 font-medium">User</th>
+                <th className="px-4 py-2.5 font-medium">Action</th>
+                <th className="px-4 py-2.5 font-medium">Resource</th>
+                <th className="px-4 py-2.5 font-medium">Result</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        </div>
+            </thead>
+            <tbody>
+              {events.map((e) => (
+                <tr
+                  key={e.id}
+                  onClick={() => setSelected(e)}
+                  className="border-b border-slate-100 last:border-0 hover:bg-slate-50 cursor-pointer"
+                >
+                  <td className="px-4 py-2.5 text-slate-500">{e.time}</td>
+                  <td className="px-4 py-2.5 text-slate-900 font-medium">{e.user}</td>
+                  <td className="px-4 py-2.5 text-slate-600">{ACTION_LABEL[e.action] || e.action}</td>
+                  <td className="px-4 py-2.5 text-slate-600 font-mono text-xs">{e.resource.slice(0, 8)}</td>
+                  <td className="px-4 py-2.5"><StatusBadge status={e.result} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          </div>
+        )}
       </Card>
 
       <DetailDrawer event={selected} onClose={() => setSelected(null)} />

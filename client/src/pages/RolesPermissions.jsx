@@ -42,9 +42,8 @@ export default function RolesPermissions() {
       </Card>
 
       <p className="text-xs text-slate-500 mt-3">
-        This matrix is designed to be enforced by API middleware, not just hidden in the UI —
-        a Staff account should get a 403 from the server even if it calls the approve endpoint
-        directly. That enforcement lands in Milestone 2.
+        This matrix is enforced by API middleware, not just hidden in the UI — a Staff account
+        gets a 403 from the server even if it calls the approve endpoint directly.
       </p>
     </div>
   );
