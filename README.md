@@ -60,7 +60,8 @@ The Vite dev server proxies `/api` to `http://localhost:4000`.
 - Every create/approve/reject action is written to an audit log; `GET /api/requests/:id/history` powers the per-request audit timeline in the UI.
 - Frontend fully wired to this real API (Overview, Requests, Approvals, Request Detail, Users, Audit Log) — no more mock data for any of it.
 - A real "New Request" form (`/requests/new`) — any role can submit a request end to end through the UI, not just via curl.
+- Admin UI for role management — inline role selector on the Users page, backed by `PATCH /api/users/:id/role`, audited, and blocked from self-modification (can't demote/promote yourself).
+- Disable/enable user accounts — `PATCH /api/users/:id/status`, blocked at login (423) and kicked out immediately if already signed in, audited, self-disable blocked.
 
 **Not done yet:**
-- No admin UI to change a user's role after creation (roles are fixed at seed time).
 - Not deployed anywhere yet — local only.

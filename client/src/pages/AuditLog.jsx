@@ -9,7 +9,13 @@ const ACTION_LABEL = {
   CREATED_REQUEST: "Created",
   APPROVED_REQUEST: "Approved",
   REJECTED_REQUEST: "Rejected",
+  UPDATE_USER_ROLE: "Updated role",
+  DISABLED_USER: "Disabled user",
+  ENABLED_USER: "Enabled user",
 };
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const displayResource = (resource) => (UUID_RE.test(resource) ? resource.slice(0, 8) : resource);
 
 function DetailDrawer({ event, onClose }) {
   if (!event) return null;
@@ -27,9 +33,9 @@ function DetailDrawer({ event, onClose }) {
 
         <dl className="space-y-4 text-sm">
           {[
-            ["Action", event.action],
+            ["Action", ACTION_LABEL[event.action] || event.action],
             ["Performed by", event.user],
-            ["Resource", event.resource],
+            ["Resource", displayResource(event.resource)],
             ["Timestamp", `${event.date} ${event.time}`],
             ["Before", event.before],
             ["After", event.after],
@@ -94,7 +100,7 @@ export default function AuditLog() {
                   <td className="px-4 py-2.5 text-slate-500">{e.time}</td>
                   <td className="px-4 py-2.5 text-slate-900 font-medium">{e.user}</td>
                   <td className="px-4 py-2.5 text-slate-600">{ACTION_LABEL[e.action] || e.action}</td>
-                  <td className="px-4 py-2.5 text-slate-600 font-mono text-xs">{e.resource.slice(0, 8)}</td>
+                  <td className="px-4 py-2.5 text-slate-600 font-mono text-xs">{displayResource(e.resource)}</td>
                   <td className="px-4 py-2.5"><StatusBadge status={e.result} /></td>
                 </tr>
               ))}

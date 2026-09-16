@@ -46,6 +46,10 @@ export async function login(req, res) {
     return res.status(401).json({ message: "Invalid email or password." });
   }
 
+  if (!user.isActive) {
+    return res.status(423).json({ message: "This account has been disabled. Contact an administrator." });
+  }
+
   res.json({ token: signToken(user), user: toPublicUser(user) });
 }
 

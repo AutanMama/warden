@@ -8,4 +8,7 @@ export const approveRequest = (id) => api.post(`/requests/${id}/approve`).then((
 export const rejectRequest = (id) => api.post(`/requests/${id}/reject`).then((r) => r.data.request);
 
 export const listUsers = () => api.get("/users").then((r) => r.data.users);
+export const updateUserRole = (id, role) => api.patch(`/users/${id}/role`, { role }).then((r) => r.data.user);
+export const updateUserStatus = (id, isActive) =>
+  api.patch(`/users/${id}/status`, { isActive }).then((r) => r.data.user);
 export const listAuditLog = () => api.get("/audit-log").then((r) => r.data.events);

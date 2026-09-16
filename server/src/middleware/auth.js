@@ -14,6 +14,9 @@ export async function requireAuth(req, res, next) {
     const { sub } = jwt.verify(token, process.env.JWT_SECRET);
     const user = await prisma.user.findUnique({ where: { id: sub } });
     if (!user) return res.status(401).json({ message: "User no longer exists." });
+    if (!user.isActive) {
+      return res.status(423).json({ message: "This account has been disabled. Contact an administrator." });
+    }
 
     req.user = user;
     next();
